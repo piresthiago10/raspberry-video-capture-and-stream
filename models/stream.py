@@ -1,16 +1,12 @@
 # For more info: http://docs.opencv.org/3.0-beta/doc/py_tutorials/py_gui/py_video_display/py_video_display.html
 import subprocess
 
-import cv2
-import ffmpeg
-import numpy as np
-
 
 class Stream():
     def __init__(self):
         self._codec = 'h264'
         self._width = '1920'
-        self._heigth = '1080'
+        self._height = '1080'
         self._framerate = '30'
         self._device = '/dev/video0'
         self._stream_ip = '18.9.98.125'
@@ -21,13 +17,13 @@ class Stream():
         video_size = f'{self._width}x{self._height}'
         framerate = self._framerate
         device = self._device
-        rstp = f'rtsp://{self._stream_ip}:{self._stream_port}/live/stream'
+        rtsp = f'rtsp://{self._stream_ip}:{self._stream_port}/live/stream'
 
-        self._rtsp = 'rtsp://18.9.98.125:80/live/stream'
-        subprocess.call(
-            f'ffmpeg -input_format {codec} -f video4linux2 -video_size {video_size} -framerate {framerate} -i {device} -c:v copy -an -f rtsp {rtsp}')
-        # ffmpeg -input_format yuyv422 -f video4linux2 -s 1280x720 -r 10 -i /dev/video0 -c:v h264_omx -r 10 -b:v 2M -an -f rtsp rtsp://localhost:80/live/stream
+        ffmpeg_command = ["ffmpeg", "-input_format", codec,
+                          "-f", "video4linux2", "-video_size", video_size, "-framerate", framerate,
+                          "-i", device, "-c:v", "copy", "-an", "-f", "rtsp", rtsp]
 
+        subprocess.call(ffmpeg_command)
 
 # # Playing video from file:
 # # cap = cv2.VideoCapture('vtest.avi')
