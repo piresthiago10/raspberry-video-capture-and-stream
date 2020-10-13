@@ -1,8 +1,6 @@
 import json
 import os
 
-import picamera
-
 class System():
 
     def create_dir(self, video_path):
@@ -18,6 +16,7 @@ class System():
 
         video_path = os.path.join(video_path)
         if os.path.isdir(video_path):
+            pass
         else:
             os.makedirs(video_path)
             # descomentar quanto estiver no rodando no supervisor

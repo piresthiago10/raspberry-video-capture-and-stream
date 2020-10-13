@@ -1,13 +1,16 @@
 # For more info: http://docs.opencv.org/3.0-beta/doc/py_tutorials/py_gui/py_video_display/py_video_display.html
+# rtsp://admin:sde12345@192.168.10.102:554/cam/realmonitor?channel=2&subtype=0
 import subprocess
+import threading
 
 
-class Stream():
+class Stream(threading.Thread):
     def __init__(self):
+        threading.Thread.__init__(self, name="record_thread", daemon=True)
         self._codec = 'h264'
-        self._width = '1920'
-        self._height = '1080'
-        self._framerate = '30'
+        self._width = '720'
+        self._height = '480'
+        self._framerate = '15'
         self._device = '/dev/video0'
         self._stream_ip = '18.9.98.125'
         self._stream_port = '80'
@@ -17,7 +20,7 @@ class Stream():
         video_size = f'{self._width}x{self._height}'
         framerate = self._framerate
         device = self._device
-        rtsp = f'rtsp://{self._stream_ip}:{self._stream_port}/live/stream'
+        rtsp = f'rtsp://admin:Dvr12345@192.168.10.101:554/cam/realmonitor?channel=4&subtype=0'
 
         ffmpeg_command = ["ffmpeg", "-input_format", codec,
                           "-f", "video4linux2", "-video_size", video_size, "-framerate", framerate,
@@ -25,43 +28,9 @@ class Stream():
 
         subprocess.call(ffmpeg_command)
 
-# # Playing video from file:
-# # cap = cv2.VideoCapture('vtest.avi')
-# # Capturing video from webcam:
-# cap = cv2.VideoCapture(0)
+    def run(self):
 
-# currentFrame = 0
-# while(True):
-#     # Capture frame-by-frame
-#     ret, frame = cap.read()
-
-#     # Handles the mirroring of the current frame
-#     frame = cv2.flip(frame, 1)
-
-#     # Our operations on the frame come here
-#     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-#     # Saves image of the current frame in jpg file
-#     # name = 'frame' + str(currentFrame) + '.jpg'
-#     # cv2.imwrite(name, frame)
-
-#     # Display the resulting frame
-#     cv2.imshow('frame', gray)
-#     if cv2.waitKey(1) & 0xFF == ord('q'):
-#         break
-
-#     # To stop duplicate images
-#     currentFrame += 1
-
-# # When everything done, release the capture
-# cap.release()
-# cv2.destroyAllWindows()
-
-# # Potential Error:
-# # OpenCV: Cannot Use FaceTime HD Kamera
-# # OpenCV: camera failed to properly initialize!
-# # Segmentation fault: 11
-# #
-# # Solution:
-# # I solved this by restarting my computer.
-# # http://stackoverflow.com/questions/40719136/opencv-cannot-use-facetime/42678644#42678644
+        try:
+            self.ffmpeg_stream()
+        except Exception as e:
+            return e
